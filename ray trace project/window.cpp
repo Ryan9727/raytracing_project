@@ -4,6 +4,8 @@
 
 #include "window.h"
 
+#ifdef _WIN32
+
 bardrix::window::window(const char* title, int width, int height) {
     if (title == nullptr || title[0] == '\0')
         title_ = "Bardrix Window";
@@ -44,10 +46,10 @@ bool bardrix::window::show(int x, int y) {
     WNDCLASS wc = {};
     wc.lpfnWndProc = window_proc;
     wc.hInstance = GetModuleHandle(nullptr);
-    wc.lpszClassName = LPCWSTR(title_);
+    wc.lpszClassName = title_;
     RegisterClass(&wc);
 
-    hwnd_ = CreateWindowEx(0, wc.lpszClassName, LPCWSTR(title_), WS_OVERLAPPEDWINDOW, x, y, width_, height_, nullptr,
+    hwnd_ = CreateWindowEx(0, wc.lpszClassName, title_, WS_OVERLAPPEDWINDOW, x, y, width_, height_, nullptr,
         nullptr, GetModuleHandle(nullptr), this);
     if (hwnd_ == nullptr)
         return false;
@@ -126,3 +128,5 @@ LRESULT CALLBACK bardrix::window::window_proc(HWND hwnd, UINT msg, WPARAM wparam
     }
     return 0;
 }
+
+#endif // _WIN32
