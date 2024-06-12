@@ -1,0 +1,8 @@
+﻿  ray trace project.cpp
+C:\Users\nickh\Documents\c++_school\ray trace project\ray trace project\ray trace project.cpp(92,62): warning C4244: 'argument': conversion from 'double' to 'bardrix::color::uchar', possible loss of data
+  Generating code
+  0 of 452 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  ray trace project.vcxproj -> C:\Users\nickh\Documents\c++_school\ray trace project\x64\Release\ray trace project.exe

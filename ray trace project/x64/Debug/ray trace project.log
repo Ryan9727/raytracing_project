@@ -1,2 +1,3 @@
 ﻿  ray trace project.cpp
+C:\Users\nickh\Documents\c++_school\ray trace project\ray trace project\ray trace project.cpp(92,62): warning C4244: 'argument': conversion from 'double' to 'bardrix::color::uchar', possible loss of data
   ray trace project.vcxproj -> C:\Users\nickh\Documents\c++_school\ray trace project\x64\Debug\ray trace project.exe
