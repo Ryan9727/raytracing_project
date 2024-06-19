@@ -8,6 +8,7 @@
 
 #include "donut.h"
 #include "sphere.h"
+#include "planet.h"
 #include "window.h"
 #include "bardrix/quaternion.h"
 #include <bardrix/ray.h>
@@ -47,33 +48,31 @@ double calculate_light_intensity(const bardrix::shape& shape, const bardrix::lig
     return min(1.0, intensity * light.inverse_square_law(intersection_point));
 }
 std::vector<bardrix::light> lights{
-    bardrix::light(bardrix::point3(0, 0, 0), 6, bardrix::color::blue()),
-    bardrix::light(bardrix::point3(0, 0, 0), 60, bardrix::color::blue()),
-    bardrix::light(bardrix::point3(1, -2, -1), 60, bardrix::color::blue()),
-    bardrix::light(bardrix::point3(1, 2, -1), 60, bardrix::color::blue()),
-    bardrix::light(bardrix::point3(-1, -2, -1), 60, bardrix::color::blue()),
-    bardrix::light(bardrix::point3(0, 2, -1), 60, bardrix::color::blue()),
-    bardrix::light(bardrix::point3(0, -2, -1), 60, bardrix::color::blue()),
-    bardrix::light(bardrix::point3(-2, 0, -1), 60, bardrix::color::blue()),
-    bardrix::light(bardrix::point3(2, 0, -1), 60, bardrix::color::blue())
+    bardrix::light(bardrix::point3(-3, 0, 0), 9, bardrix::color::red()),
+    bardrix::light(bardrix::point3(3, 0, 0), 10, bardrix::color::blue()),
 };
 
 
 int main() {
+    bardrix::universal_gravitational_constant = 6.67430e-6;
     int width = 600;
     int height = 600;
     // Create a window
     bardrix::window window("Raytracing", width, height);
 
     // Create a camera
-    bardrix::camera camera = bardrix::camera({ 0,0,0 }, { 0,0,1 }, width, height, 60);
+    bardrix::camera camera = bardrix::camera({ 0,0,0 }, { 0.5,0,1 }, width, height, 90);
 
     // Create a sphere
-    std::vector<bardrix::shape*> shapes = {
-        new sphere(1.0, bardrix::point3(0.0, 0.0, 3.0), bardrix::material(0.003, 0, 1, 9, bardrix::color::red())),
+    std::vector<planet*> shapes = {
+        new planet(1.0, bardrix::point3(0.0, 0.0, 3.0), bardrix::material(3, 1, 0, 9, bardrix::color::green()), 200),
+        new planet(.4, bardrix::point3(2.0, 0.0, 3.0), bardrix::material(3, 1, 0, 9, bardrix::color::green()), 1000),
         //new donut(1, {0,0, 3})
     };
     window.on_paint = [&camera, &shapes](bardrix::window* window, std::vector<uint32_t>& buffer) {
+        shapes[0]->move_planet(*shapes[1]);
+        shapes[1]->move_planet(*shapes[0]);
+
         // Draw the sphere
         for (int y = 0; y < window->get_height(); y++) {
             for (int x = 0; x < window->get_width(); x++) {
@@ -85,17 +84,17 @@ int main() {
 
                     // If the ray intersects the sphere, paint the pixel white
                     if (intersection.has_value()) {
-                        double intensity = 0;
                         for (const bardrix::light& L : lights) {
-                            intensity += calculate_light_intensity(*s, L, camera, intersection.value());
+                            double intensity = calculate_light_intensity(*s, L, camera, intersection.value());
+                            color += s->get_material().color.blended(L.color) * intensity;
                         }
-                        color = bardrix::color(254, 130, 83, 0.8) * intensity;
                     }
                     // pixel write
                 }
              buffer[y * window->get_width() + x] = color.argb(); // ARGB is the format used by Windows API
             }
         }
+        window->redraw();
     };
 
     window.on_resize = [&camera](bardrix::window* window, int width, int height) {

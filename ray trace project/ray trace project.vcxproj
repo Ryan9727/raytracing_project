@@ -132,12 +132,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="donut.cpp" />
+    <ClCompile Include="planet.cpp" />
     <ClCompile Include="ray trace project.cpp" />
     <ClCompile Include="sphere.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="donut.h" />
+    <ClInclude Include="planet.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
