@@ -48,8 +48,8 @@ double calculate_light_intensity(const bardrix::shape& shape, const bardrix::lig
     return min(1.0, intensity * light.inverse_square_law(intersection_point));
 }
 std::vector<bardrix::light> lights{
-    bardrix::light(bardrix::point3(-3, 0, 0), 9, bardrix::color::red()),
-    bardrix::light(bardrix::point3(3, 0, 0), 10, bardrix::color::blue()),
+    bardrix::light(bardrix::point3(-3, 0, 0), 5, bardrix::color::red()),
+    //bardrix::light(bardrix::point3(3, 0, 0), 10, bardrix::color::blue()),
 };
 
 
@@ -65,8 +65,8 @@ int main() {
 
     // Create a sphere
     std::vector<planet*> shapes = {
-        new planet(1.0, bardrix::point3(0.0, 0.0, 3.0), bardrix::material(3, 1, 0, 9, bardrix::color::green()), 200),
-        new planet(.4, bardrix::point3(2.0, 0.0, 3.0), bardrix::material(3, 1, 0, 9, bardrix::color::green()), 1000),
+        new planet(1.0, bardrix::point3(0.0, 0.0, 3.0), bardrix::material(3, 1, 0, 9, bardrix::color::green()), 200, {0.025,0.025,0.025}),
+        new planet(1, bardrix::point3(2.0, 0.0, 3.0), bardrix::material(3, 1, 0, 9, bardrix::color::green()), 1000),
         //new donut(1, {0,0, 3})
     };
     window.on_paint = [&camera, &shapes](bardrix::window* window, std::vector<uint32_t>& buffer) {
@@ -78,7 +78,7 @@ int main() {
             for (int x = 0; x < window->get_width(); x++) {
                 bardrix::color color = bardrix::color::black();
                 for (auto* s : shapes){
-                    bardrix::ray ray = *camera.shoot_ray(x, y, 10);
+                    bardrix::ray ray = *camera.shoot_ray(x, y, 1000);
                     auto intersection = s->intersection(ray);
 
 
