@@ -48,7 +48,7 @@ double calculate_light_intensity(const bardrix::shape& shape, const bardrix::lig
     return min(1.0, intensity * light.inverse_square_law(intersection_point));
 }
 std::vector<bardrix::light> lights{
-    bardrix::light(bardrix::point3(-3, 0, 0), 5, bardrix::color::red()),
+    bardrix::light(bardrix::point3(-3, 0, 0), 50, bardrix::color::red()),
     //bardrix::light(bardrix::point3(3, 0, 0), 10, bardrix::color::blue()),
 };
 
@@ -65,8 +65,8 @@ int main() {
 
     // Create a sphere
     std::vector<planet*> shapes = {
-        new planet(1.0, bardrix::point3(0.0, 0.0, 3.0), bardrix::material(3, 1, 0, 9, bardrix::color::green()), 200, {0.025,0.025,0.025}),
-        new planet(1, bardrix::point3(2.0, 0.0, 3.0), bardrix::material(3, 1, 0, 9, bardrix::color::green()), 1000),
+        new planet(1.0, bardrix::point3(0.0, 0.0, 3.0), bardrix::material(1, 1, 1, 2, bardrix::color::green()), 200, {0.025,0.025,0.025}),
+        new planet(1, bardrix::point3(2.0, 0.0, 3.0), bardrix::material(0.003, -10.5, 1, 0, bardrix::color::yellow()), 1980),
         //new donut(1, {0,0, 3})
     };
     window.on_paint = [&camera, &shapes](bardrix::window* window, std::vector<uint32_t>& buffer) {
@@ -77,20 +77,34 @@ int main() {
         for (int y = 0; y < window->get_height(); y++) {
             for (int x = 0; x < window->get_width(); x++) {
                 bardrix::color color = bardrix::color::black();
-                for (auto* s : shapes){
+                    planet* closest_planet = nullptr;
                     bardrix::ray ray = *camera.shoot_ray(x, y, 1000);
-                    auto intersection = s->intersection(ray);
+                    
+                   
+                    double distance = HUGE_VAL;
+                    for (auto* s2 : shapes) {
+                        if (s2->intersection(ray).has_value()) {
+                            double current_distance = ray.position.distance(s2->get_position());
+                            if (current_distance < distance) {
+                                distance = current_distance;
+                                closest_planet = s2;
+                            }
 
-
-                    // If the ray intersects the sphere, paint the pixel white
-                    if (intersection.has_value()) {
-                        for (const bardrix::light& L : lights) {
-                            double intensity = calculate_light_intensity(*s, L, camera, intersection.value());
-                            color += s->get_material().color.blended(L.color) * intensity;
                         }
                     }
+                    if (closest_planet != nullptr) {
+                        auto intersection = closest_planet->intersection(ray);
+                        if (intersection.has_value()) {
+                            for (const bardrix::light& L : lights) {
+                                double intensity = calculate_light_intensity(*closest_planet, L, camera, intersection.value());
+                                color += closest_planet->get_material().color.blended(L.color) * intensity;
+                            }
+                        }
+                    }
+                    // If the ray intersects the sphere, paint the pixel white
+                    
                     // pixel write
-                }
+                
              buffer[y * window->get_width() + x] = color.argb(); // ARGB is the format used by Windows API
             }
         }
